@@ -8,16 +8,19 @@ Created on Fri Nov 11 17:44:23 2022
 import pandas as pd
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
-from dash import Dash, dcc, html, Input, Output
+from dash import Dash, dcc, html, Input, Output, dash_table
 import pandas as pd
 from plotly.subplots import make_subplots
+
 
 import numpy as np
 
 PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
 
 apple_preds = pd.read_excel("../data/predictions/AAPL/predictions.xlsx")
-app = Dash(__name__, external_stylesheets=[dbc.themes.CYBORG])
+apple_sentiments = pd.read_csv("../data/Predictions/AAPL/sentiment_out.csv")
+
+app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 
 def plot_line():
     fig = go.Figure()
@@ -65,6 +68,27 @@ def plot_pie():
 
     return fig
     
+def plot_table():
+    return dash_table.DataTable(
+        data = apple_sentiments.to_dict('records'),
+        columns=[
+            {'name': i, 'id': i} for i in apple_sentiments.columns
+        ],
+        style_data_conditional=[
+            {
+                'if': {
+                    'filter_query': '{Polarity} > 0.7'
+                },
+                'backgroundColor': '#86FF33',
+                'color': 'white'
+            }
+        ],
+        style_table={
+            'height': 1000,
+            'overflowY': 'scroll',
+            'width': 750
+        }
+    )
 navbar = dbc.Navbar(
     dbc.Container(
         [
@@ -183,7 +207,21 @@ def update_apple_tab(n_clicks):
                        
                        ])                      
                    ])
-            ])    
+            ]),
+            dbc.Row([
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader("Sentiment Data"),
+                        dbc.CardBody(plot_table())
+                    ])    
+                ]),
+                dbc.Col([
+                    dbc.Card([
+                        dbc.CardHeader("Explainable AI"),
+                        dbc.CardBody(html.P("HI"))
+                    ])
+                ])
+            ])
         ])
 if __name__ == '__main__':
     app.run_server(debug=True)
