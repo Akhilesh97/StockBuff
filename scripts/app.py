@@ -84,7 +84,7 @@ def plot_table():
             }
         ],
         style_table={
-            'height': 1000,
+            'height': 500,
             'overflowY': 'scroll',
             'width': 750
         }
