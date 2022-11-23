@@ -1,12 +1,17 @@
-# StockBuff Model Directory and Loading
+# StockBuff
 
-## Model Directory Structure
+Definition
+
+
+## StockBuff Model Directory and Loading
+
+### Model Directory Structure
 
 ```yaml
 └── data
 └── models
-    ├── finbert_v1
-    	├── config.json
+	├── finbert_v1
+		├── config.json
 	├── gitattributes.txt
 	├── pytorch_model.bin
 	├── special_tokens_map.json
@@ -25,7 +30,7 @@
             └── ...
 ```
 
-## Model Path Setting
+### Model Path Setting
 
 ```bash
 # PATH:
@@ -37,7 +42,7 @@ PATH_RES_DIR = os.path.join(os.path.join(root_dir, "models"), "resources")
 PATH_BERT_MODEL = os.path.join(os.path.join(root_dir, "models"), "finbert_v1")
 ```
 
-## Model Loading
+### Model Loading
 
 ```bash
 # 1. Load Spacy Model:
@@ -52,10 +57,10 @@ print("Spacy loaded.")
 
 ```bash
 # 2. Load NLP Resources:
-- resources_dir_path = PATH_RES_DIR
+resources_dir_path = PATH_RES_DIR
 ```
 
 ```bash
 3. Load sent.BERT model:
-- bert_model_fp = PATH_BERT_MODEL
+bert_model_fp = PATH_BERT_MODEL
 ```
