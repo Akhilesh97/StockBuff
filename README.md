@@ -10,20 +10,20 @@ Definition
 ```yaml
 └── data
 └── models
-	├── finbert_v1
-		├── config.json
-	├── gitattributes.txt
-	├── pytorch_model.bin
-	├── special_tokens_map.json
-	├── tokenizer_config.json
-	├── vocab.txt
-	├── README.md
+    ├── finbert_v1
+        ├── config.json
+        ├── gitattributes.txt
+        ├── pytorch_model.bin
+        ├── special_tokens_map.json
+        ├── tokenizer_config.json
+        ├── vocab.txt
+        ├── README.md
     ├── Resources
-    	├── chatwords.txt
-	├── ...
+        ├── chatwords.txt
+        ├── ...
     └── en_core_web_lg
-    	├── __init__.py
-	├── meta.json
+        ├── __init__.py
+        ├── meta.json
         └── en_core_web_lg-2.2.5
             ├── config.cfg
             ├── meta.json
