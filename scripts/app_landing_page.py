@@ -118,7 +118,7 @@ def get_current_price(value, reference):
         value = value,
         number = {'prefix': "$"},
         domain = {'x': [0,0], 'y': [0, 0]},
-        delta = {'reference': reference, 'relative': True, 'position' : "top", 'valueformat':'.2f'},
+        delta = {'reference': reference, 'relative': True, 'position' : "top", 'valueformat':'.2f',},
         ))
     fig.update_layout(height = 300)
     return fig
