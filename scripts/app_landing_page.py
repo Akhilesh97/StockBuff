@@ -6,6 +6,7 @@ Created on Mon Nov 14 20:14:33 2022
 """
 
 import pandas as pd
+import numpy as np
 import plotly.graph_objects as go
 import dash_bootstrap_components as dbc
 from dash import Dash, dcc, html, Input, Output, dash_table, State
@@ -19,8 +20,16 @@ import numpy as np
 app = Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
 PLOTLY_LOGO = "https://images.plot.ly/logo/new-branding/plotly-logomark.png"
 
-apple_preds = pd.read_excel("../data/predictions/AAPL/predictions.xlsx")
-apple_sentiments = pd.read_csv("../data/Predictions/AAPL/sentiment_out.csv")
+apple_sentiments_ = pd.read_csv("../outputs/Twitter_Microsoft_Sentiments_2015_2019.csv",lineterminator='\n')
+apple_sentiments = apple_sentiments_[['date', 'Negative', 'Neutral', 'Positive', 'Sentiment', 'Polarity','Deep_tweet']]
+min_polarity = round(min(apple_sentiments["Polarity"]),2)
+max_polarity = round(max(apple_sentiments["Polarity"]),2)
+apple_sentiments["date"] = pd.to_datetime(apple_sentiments["date"])
+apple_sentiments['date'] = pd.to_datetime(apple_sentiments["date"].dt.strftime('%Y-%m-%d'))
+apple_sentiments["Negative"] = np.round(apple_sentiments["Negative"],2)
+apple_sentiments["Neutral"] = np.round(apple_sentiments["Neutral"],2)
+apple_sentiments["Positive"] = np.round(apple_sentiments["Positive"],2)
+apple_sentiments["Polarity"] = np.round(apple_sentiments["Polarity"],2)
 
 navbar = dbc.Navbar(
     dbc.Container(
@@ -44,7 +53,7 @@ navbar = dbc.Navbar(
     color="dark",
     dark=True,
 )
-def plot_line():
+def plot_line(apple_preds):
     fig = go.Figure()
     fig.add_trace(go.Scatter(
         name="Actuals",
@@ -90,26 +99,19 @@ def plot_pie():
 
     return fig
     
-def plot_table():
+def plot_table(table):
     return dash_table.DataTable(
-        data = apple_sentiments.to_dict('records'),
+        data = table.to_dict('records'),
         columns=[
-            {'name': i, 'id': i} for i in apple_sentiments.columns
-        ],
-        style_data_conditional=[
-            {
-                'if': {
-                    'filter_query': '{Polarity} > 0.7'
-                },
-                'backgroundColor': '#86FF33',
-                'color': 'white'
-            }
+            {'name': i, 'id': i} for i in table.columns
         ],
         style_table={
             'height': 500,
             'overflowY': 'scroll',
-            'width': 750
-        }
+            'width': 1100
+        },
+        export_format="csv",
+
     )
 def get_current_price(value, reference):
     fig = go.Figure()
@@ -128,8 +130,10 @@ toast_apple_current_market = dbc.Toast([
         html.Div([
             dcc.Graph(figure = get_current_price(150, 162))
         ]),
-        html.H5("Current News"),
-        html.P("Microsoft revives SwiftKey keyboard, brings it back on iOS for Apple users"),                
+        
+        dbc.Toast([
+            html.P("Microsoft revives SwiftKey keyboard, brings it back on iOS for Apple users"),                
+        ], header = "Current News")     ,   
         html.Br(),
         html.H5("Market Sentiment - Positive"),
         daq.Gauge(
@@ -138,15 +142,18 @@ toast_apple_current_market = dbc.Toast([
             max=10,
             min=0,
         )
-    ], header = "Apple Current Price", icon = 'src="/static/images/apple_logo.jpg"')
+    ], header = "Microsoft Current Price", icon = 'src="/static/images/apple_logo.jpg"')
 
 toast_microsoft_current_market = dbc.Toast([
         html.Img(src="/static/images/microsoft_log.jpg", height="50px"),    
         html.Div([
             dcc.Graph(figure = get_current_price(90, 98))
         ]),
-        html.H5("Current News"),
-        html.P("Customers want to know: How do I get more value from my data?"),
+
+        dbc.Toast([
+            html.P("Customers want to know: How do I get more value from my data?")
+        ], header = "Current News"),
+        
         html.Br(),
         html.H5("Market Sentiment - Neutral"),
         daq.Gauge(
@@ -155,15 +162,18 @@ toast_microsoft_current_market = dbc.Toast([
             max=10,
             min=0,
         )
-    ], header = "Microsoft Current Price", icon = "/static/images/microsoft_log.jpg")
+    ], header = "Apple Current Price", icon = "/static/images/microsoft_log.jpg")
 
 toast_netflix_current_market = dbc.Toast([
         html.Img(src="/static/images/netflix-new-logo.png", height="50px"),    
         html.Div([
             dcc.Graph(figure = get_current_price(102, 105))
         ]),
-        html.H5("Current News"),
-        html.P("Bob Iger’s return may not boost Disney’s shares as market sends mixed signals to media stocks"),        
+        
+        dbc.Toast([
+            html.P("Bob Iger’s return may not boost Disney’s shares as market sends mixed signals to media stocks"),            
+        ], header = "Current News"),
+                
         html.Br(),
         html.H5("Market Sentiment - Negative"),
         daq.Gauge(
@@ -179,8 +189,11 @@ toast_amazon_current_market = dbc.Toast([
         html.Div([
             dcc.Graph(figure = get_current_price(96, 90))
         ]),
-        html.H5("Current News"),
-        html.P("When will the Big Tech layoffs come to an end?"),        
+        
+        dbc.Toast([
+            html.P("When will the Big Tech layoffs come to an end?"),            
+        ], header = "Current News"),
+        
         html.Br(),
         html.H5("Market Sentiment - Positive"),
         daq.Gauge(
@@ -198,29 +211,38 @@ def toggle_modal(n1, is_open):
     return is_open
 
 def prepare_apple_modal():
-    fig = plot_line()
-    fig1 = plot_pie()
     return html.Div([
         dbc.Row([
            dbc.Col([
                dbc.Card([
                    dbc.CardHeader("Stock Predictions"),
-                   dbc.CardBody(dcc.Graph(figure=fig))
+                   dbc.CardBody([
+                       dcc.Dropdown(
+                           options = [
+                               {'label':"LSTM Predictions without Sentiments", 'value' : "lstm-basic"},
+                               {'label':"LSTM Predictions with one feature - Polarity", 'value' : "lstm-one-feat"},
+                               {'label':"LSTM Prediction with multi features", 'value' : "lstm-multi-feat"}    
+                           ],
+                           value = "lstm-basic",
+                           id = "lstm-pred"
+                       ),
+                       dcc.Graph(id = "predictions-output")
+                   ])
                ])
                ]),
-           dbc.Col([
-               dbc.Card([
-                    dbc.CardHeader("Comparing Stock Metrics"),
-                    dbc.CardBody(dcc.Graph(figure = fig1))
-                   
-                   ])                      
-               ])
         ]),
         dbc.Row([
         
             dbc.Card([
                 dbc.CardHeader("Sentiment Data"),
-                dbc.CardBody(plot_table())
+                dbc.CardBody([
+                    html.P("Select Sentiment Value"),
+                    dcc.RangeSlider(min_polarity, max_polarity, 0.1, value=[-0.2, 0.4], id='my-range-slider'),                        
+                    html.P("Sentiment Table"),
+                    html.Div(id = "sentiment-table")                        
+                    
+                    
+                ])
             ])    
             
         ])
@@ -309,5 +331,30 @@ app.callback(
     Input("open-netflix", "n_clicks"),
     State("modal-netflix", "is_open"),
 )(toggle_modal)
+
+@app.callback(
+    Output("predictions-output", "figure"),
+    Input("lstm-pred", "value")    
+)
+def return_pred_graph(input_val):
+    if input_val == "lstm-basic":
+        apple_preds = pd.read_csv("../outputs/LSTM_Outputs_Basic.csv")
+    elif input_val == "lstm-one-feat":
+        apple_preds = pd.read_csv("../outputs/LSTM_Outputs_One_Feat.csv")
+    else:
+        apple_preds = pd.read_csv("../outputs/LSTM_Outputs_Multi_Feat.csv")
+    figure = plot_line(apple_preds)
+    return figure
+
+@app.callback(
+    Output("sentiment-table", "children"),
+    Input("my-range-slider", "value")    
+)
+def return_sentiment_table(value):
+    low = value[0]
+    high = value[1]
+    table_to_plot = apple_sentiments[(apple_sentiments["Polarity"] > low) & (apple_sentiments["Polarity"] < high)]
+    dt = plot_table(table_to_plot)
+    return dt
 if __name__ == '__main__':
     app.run_server(debug=True)
