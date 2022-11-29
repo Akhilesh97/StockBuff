@@ -13,7 +13,9 @@ from dash import Dash, dcc, html, Input, Output, dash_table, State
 import pandas as pd
 from plotly.subplots import make_subplots
 import dash_daq as daq
-
+import get_live_stock_data
+import get_live_news
+import get_live_sentiment
 
 import numpy as np
 
@@ -120,87 +122,108 @@ def get_current_price(value, reference):
         value = value,
         number = {'prefix': "$"},
         domain = {'x': [0,0], 'y': [0, 0]},
-        delta = {'reference': reference, 'relative': True, 'position' : "top", 'valueformat':'.2f',},
+        delta = {'reference': reference, 'relative': True, 'position' : "top", 'valueformat':'.3f',},
         ))
     fig.update_layout(height = 300)
     return fig
 
+
+apple_current_price, apple_prev_price = get_live_stock_data.get_latest_stock_data("AAPL")
+#apple_latest_news = get_live_news.get_latest_news("AAPL")
+apple_latest_news = "Apple Falls on China Fears, but This Nasdaq Stock Is Soaring Monday"
+apple_sent_dict, apple_sentiment_compound = get_live_sentiment.get_compound(apple_latest_news)
+apple_sentiment = get_live_sentiment.get_sent_score(apple_sent_dict)
 toast_apple_current_market = dbc.Toast([
         html.Img(src="/static/images/apple_logo.jpg", height="50px"),    
         html.Div([
-            dcc.Graph(figure = get_current_price(150, 162))
+            dcc.Graph(figure = get_current_price(apple_current_price, apple_prev_price))
         ]),
         
         dbc.Toast([
-            html.P("Microsoft revives SwiftKey keyboard, brings it back on iOS for Apple users"),                
+            html.P(apple_latest_news),                
         ], header = "Current News")     ,   
         html.Br(),
-        html.H5("Market Sentiment - Positive"),
+        html.H5("Market Sentiment - %s"%apple_sentiment),
         daq.Gauge(
-            color={"gradient":True,"ranges":{"green":[0,6],"yellow":[6,8],"red":[8,10]}},
-            value=2,            
+            color={"gradient":True,"ranges":{"red":[2.5,10],"yellow":[-2.5, 2.5],"green":[-10,-2.5]}},
+            value=apple_sentiment_compound*10,            
             max=10,
-            min=0,
+            min=-10,
         )
-    ], header = "Microsoft Current Price", icon = 'src="/static/images/apple_logo.jpg"')
+    ], header = "Apple Current Price", icon = 'src="/static/images/apple_logo.jpg"')
 
+microsoft_current_price, microsoft_prev_price = get_live_stock_data.get_latest_stock_data("MSFT")
+#microsoft_latest_news = get_live_news.get_latest_news("MSFT")
+microsoft_latest_news = "Microsoft Deal, Not Earnings, Is the Focus for Activision Stock"
+microsoft_sent_dict, microsoft_sentiment_compound = get_live_sentiment.get_compound(microsoft_latest_news)
+microsoft_sentiment = get_live_sentiment.get_sent_score(microsoft_sent_dict)
 toast_microsoft_current_market = dbc.Toast([
         html.Img(src="/static/images/microsoft_log.jpg", height="50px"),    
         html.Div([
-            dcc.Graph(figure = get_current_price(90, 98))
+            dcc.Graph(figure = get_current_price(microsoft_current_price, microsoft_prev_price))
         ]),
 
         dbc.Toast([
-            html.P("Customers want to know: How do I get more value from my data?")
+            html.P(microsoft_latest_news)
         ], header = "Current News"),
         
         html.Br(),
-        html.H5("Market Sentiment - Neutral"),
+        html.H5("Market Sentiment - %s"%microsoft_sentiment),
         daq.Gauge(
-            color={"gradient":True,"ranges":{"green":[0,6],"yellow":[6,8],"red":[8,10]}},
-            value=5,            
+            color={"gradient":True,"ranges":{"red":[2.5,10],"yellow":[-2.5, 2.5],"green":[-10,-2.5]}},
+            value=microsoft_sentiment_compound*10,            
             max=10,
-            min=0,
+            min=-10,
         )
-    ], header = "Apple Current Price", icon = "/static/images/microsoft_log.jpg")
+    ], header = "Microsoft Current Price", icon = "/static/images/microsoft_log.jpg")
 
+netflix_current_price, netflix_prev_price = get_live_stock_data.get_latest_stock_data("NFLX")
+#netflix_latest_news = get_live_news.get_latest_news("NFLX")
+netflix_latest_news = "Netflix Explores Investing in Sports Leagues, Bidding on Streaming Rights"
+netflix_sent_dict, netflix_sentiment_compound = get_live_sentiment.get_compound(netflix_latest_news)
+netflix_sentiment = get_live_sentiment.get_sent_score(netflix_sent_dict)
 toast_netflix_current_market = dbc.Toast([
         html.Img(src="/static/images/netflix-new-logo.png", height="50px"),    
         html.Div([
-            dcc.Graph(figure = get_current_price(102, 105))
+            dcc.Graph(figure = get_current_price(netflix_current_price, netflix_prev_price))
         ]),
         
         dbc.Toast([
-            html.P("Bob Iger’s return may not boost Disney’s shares as market sends mixed signals to media stocks"),            
+            html.P(netflix_latest_news),            
         ], header = "Current News"),
                 
         html.Br(),
-        html.H5("Market Sentiment - Negative"),
+        html.H5("Market Sentiment - %s"%netflix_sentiment),
         daq.Gauge(
-            color={"gradient":True,"ranges":{"green":[0,6],"yellow":[6,8],"red":[8,10]}},
-            value=8,            
+            color={"gradient":True,"ranges":{"red":[2.5,10],"yellow":[-2.5, 2.5],"green":[-10,-2.5]}},
+            value=netflix_sentiment_compound*10,            
             max=10,
-            min=0,
+            min=-10,
         )
     ], header = "Netflix Current Price", icon = "/static/images/netflix-new-logo.png")
 
+amazon_current_price, amazon_prev_price = get_live_stock_data.get_latest_stock_data("AMZN")
+#amazon_latest_news = get_live_news.get_latest_news("AMZN")
+amazon_latest_news = "Amazon Stock Is Down Big. Get Ready for a Huge Rally."
+amazon_sent_dict, apple_sentiment_compound = get_live_sentiment.get_compound(amazon_latest_news)
+amazon_sentiment = get_live_sentiment.get_sent_score(amazon_sent_dict)
 toast_amazon_current_market = dbc.Toast([
         html.Img(src="/static/images/amazon_logo.png", height="50px"),    
         html.Div([
-            dcc.Graph(figure = get_current_price(96, 90))
+            dcc.Graph(figure = get_current_price(amazon_current_price, amazon_prev_price))
         ]),
         
         dbc.Toast([
-            html.P("When will the Big Tech layoffs come to an end?"),            
+            html.P(amazon_latest_news),            
         ], header = "Current News"),
         
         html.Br(),
-        html.H5("Market Sentiment - Positive"),
+        html.H5("Market Sentiment - %s"%amazon_sentiment),
         daq.Gauge(
-            color={"gradient":True,"ranges":{"green":[0,6],"yellow":[6,8],"red":[8,10]}},
-            value=7,            
+            color={"gradient":True,"ranges":{"red":[2.5,10],"yellow":[-2.5, 2.5],"green":[-10,-2.5]}},
+            value=apple_sentiment_compound*10,            
             max=10,
-            min=0,
+            min=-10,
         )
     ], header = "Amazon Current Price", icon = "/static/images/amazon_logo.png")
 
@@ -253,7 +276,7 @@ app.layout = html.Div([
         ]),
         dbc.Row([
             dbc.Col([
-                toast_apple_current_market,
+                toast_microsoft_current_market          ,      
                 dbc.Button("Click for detailed analysis", color = "success",id="open-apple", n_clicks=0, style = {"width":"350px"}),
                 dbc.Modal(
                     [
@@ -266,7 +289,7 @@ app.layout = html.Div([
                 ),                                
             ]),
             dbc.Col([
-                toast_amazon_current_market,
+                toast_amazon_current_market,                
                 dbc.Button("Click for detailed analysis", color = "success",id="open-amazon", n_clicks=0, style = {"width":"350px"}),
                 dbc.Modal(
                     [
@@ -279,7 +302,7 @@ app.layout = html.Div([
                 ),
             ]),
             dbc.Col([
-                toast_microsoft_current_market,
+                toast_apple_current_market,
                 dbc.Button("Click for detailed analysis", color = "warning",id="open-microsoft", n_clicks=0, style = {"width":"350px"}),
                 dbc.Modal(
                     [
