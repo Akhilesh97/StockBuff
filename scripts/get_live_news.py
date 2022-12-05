@@ -55,6 +55,7 @@ def get_latest_news(ticker_):
     extractor = extract_news(api_key, ticker, from_date, to_date, filepath, base_url)
     result = extractor.get_data()      
     df = extractor.create_df(result)
+    extractor.write_to_csv(df)
     text = df["title"].values[-1]
     return text
     

@@ -13,4 +13,5 @@ def get_latest_stock_data(ticker):
     data = yf.download(tickers=ticker, period='2d', interval='1h')
     pre_latest_close = data["Close"].values[0]
     latest_close_price = data["Close"].values[-1]
+    
     return round(latest_close_price,3), round(pre_latest_close,3)

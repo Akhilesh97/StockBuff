@@ -122,15 +122,19 @@ def get_current_price(value, reference):
         value = value,
         number = {'prefix': "$"},
         domain = {'x': [0,0], 'y': [0, 0]},
-        delta = {'reference': reference, 'relative': True, 'position' : "top", 'valueformat':'.3f',},
+        delta = {'reference': reference, 'relative': True, 'position' : "top", 'valueformat':'.3f'},
         ))
-    fig.update_layout(height = 300)
+    fig.update_layout(height = 265)
     return fig
 
 
 apple_current_price, apple_prev_price = get_live_stock_data.get_latest_stock_data("AAPL")
-#apple_latest_news = get_live_news.get_latest_news("AAPL")
-apple_latest_news = "Apple Falls on China Fears, but This Nasdaq Stock Is Soaring Monday"
+print(apple_current_price, apple_prev_price)
+#
+try:
+    apple_latest_news = get_live_news.get_latest_news("AAPL")    
+except:
+    apple_latest_news = "Apple Falls on China Fears, but This Nasdaq Stock Is Soaring Monday"
 apple_sent_dict, apple_sentiment_compound = get_live_sentiment.get_compound(apple_latest_news)
 apple_sentiment = get_live_sentiment.get_sent_score(apple_sent_dict)
 toast_apple_current_market = dbc.Toast([
@@ -140,12 +144,12 @@ toast_apple_current_market = dbc.Toast([
         ]),
         
         dbc.Toast([
-            html.P(apple_latest_news),                
+            html.H6(apple_latest_news),                
         ], header = "Current News")     ,   
         html.Br(),
         html.H5("Market Sentiment - %s"%apple_sentiment),
         daq.Gauge(
-            color={"gradient":True,"ranges":{"red":[2.5,10],"yellow":[-2.5, 2.5],"green":[-10,-2.5]}},
+            color={"gradient":True,"ranges":{"green":[2,10],"yellow":[-2, 2],"red":[-10, -2]}},
             value=apple_sentiment_compound*10,            
             max=10,
             min=-10,
@@ -153,8 +157,10 @@ toast_apple_current_market = dbc.Toast([
     ], header = "Apple Current Price", icon = 'src="/static/images/apple_logo.jpg"')
 
 microsoft_current_price, microsoft_prev_price = get_live_stock_data.get_latest_stock_data("MSFT")
-#microsoft_latest_news = get_live_news.get_latest_news("MSFT")
-microsoft_latest_news = "Microsoft Deal, Not Earnings, Is the Focus for Activision Stock"
+try:
+    microsoft_latest_news = get_live_news.get_latest_news("MSFT")
+except:
+    microsoft_latest_news = "Microsoft Deal, Not Earnings, Is the Focus for Activision Stock"
 microsoft_sent_dict, microsoft_sentiment_compound = get_live_sentiment.get_compound(microsoft_latest_news)
 microsoft_sentiment = get_live_sentiment.get_sent_score(microsoft_sent_dict)
 toast_microsoft_current_market = dbc.Toast([
@@ -164,13 +170,13 @@ toast_microsoft_current_market = dbc.Toast([
         ]),
 
         dbc.Toast([
-            html.P(microsoft_latest_news)
+            html.H6(microsoft_latest_news)
         ], header = "Current News"),
         
         html.Br(),
         html.H5("Market Sentiment - %s"%microsoft_sentiment),
         daq.Gauge(
-            color={"gradient":True,"ranges":{"red":[2.5,10],"yellow":[-2.5, 2.5],"green":[-10,-2.5]}},
+            color={"gradient":True,"ranges":{"green":[2,10],"yellow":[-2, 2],"red":[-10,-2]}},
             value=microsoft_sentiment_compound*10,            
             max=10,
             min=-10,
@@ -178,8 +184,10 @@ toast_microsoft_current_market = dbc.Toast([
     ], header = "Microsoft Current Price", icon = "/static/images/microsoft_log.jpg")
 
 netflix_current_price, netflix_prev_price = get_live_stock_data.get_latest_stock_data("NFLX")
-#netflix_latest_news = get_live_news.get_latest_news("NFLX")
-netflix_latest_news = "Netflix Explores Investing in Sports Leagues, Bidding on Streaming Rights"
+try:
+    netflix_latest_news = get_live_news.get_latest_news("NFLX")
+except:
+    netflix_latest_news = "Netflix Explores Investing in Sports Leagues, Bidding on Streaming Rights"
 netflix_sent_dict, netflix_sentiment_compound = get_live_sentiment.get_compound(netflix_latest_news)
 netflix_sentiment = get_live_sentiment.get_sent_score(netflix_sent_dict)
 toast_netflix_current_market = dbc.Toast([
@@ -189,13 +197,13 @@ toast_netflix_current_market = dbc.Toast([
         ]),
         
         dbc.Toast([
-            html.P(netflix_latest_news),            
+            html.H6(netflix_latest_news),            
         ], header = "Current News"),
                 
         html.Br(),
         html.H5("Market Sentiment - %s"%netflix_sentiment),
         daq.Gauge(
-            color={"gradient":True,"ranges":{"red":[2.5,10],"yellow":[-2.5, 2.5],"green":[-10,-2.5]}},
+            color={"gradient":True,"ranges":{"green":[2,10],"yellow":[-2, 2],"red":[-10,-2]}},
             value=netflix_sentiment_compound*10,            
             max=10,
             min=-10,
@@ -203,8 +211,10 @@ toast_netflix_current_market = dbc.Toast([
     ], header = "Netflix Current Price", icon = "/static/images/netflix-new-logo.png")
 
 amazon_current_price, amazon_prev_price = get_live_stock_data.get_latest_stock_data("AMZN")
-#amazon_latest_news = get_live_news.get_latest_news("AMZN")
-amazon_latest_news = "Amazon Stock Is Down Big. Get Ready for a Huge Rally."
+try:
+    amazon_latest_news = get_live_news.get_latest_news("AMZN")
+except:
+    amazon_latest_news = "Amazon Stock Is Down Big. Get Ready for a Huge Rally."
 amazon_sent_dict, apple_sentiment_compound = get_live_sentiment.get_compound(amazon_latest_news)
 amazon_sentiment = get_live_sentiment.get_sent_score(amazon_sent_dict)
 toast_amazon_current_market = dbc.Toast([
@@ -214,13 +224,13 @@ toast_amazon_current_market = dbc.Toast([
         ]),
         
         dbc.Toast([
-            html.P(amazon_latest_news),            
+            html.H6(amazon_latest_news),            
         ], header = "Current News"),
         
         html.Br(),
         html.H5("Market Sentiment - %s"%amazon_sentiment),
         daq.Gauge(
-            color={"gradient":True,"ranges":{"red":[2.5,10],"yellow":[-2.5, 2.5],"green":[-10,-2.5]}},
+            color={"gradient":True,"ranges":{"green":[2,10],"yellow":[-2, 2],"red":[-10,-2]}},
             value=apple_sentiment_compound*10,            
             max=10,
             min=-10,
@@ -303,7 +313,7 @@ app.layout = html.Div([
             ]),
             dbc.Col([
                 toast_apple_current_market,
-                dbc.Button("Click for detailed analysis", color = "warning",id="open-microsoft", n_clicks=0, style = {"width":"350px"}),
+                dbc.Button("Click for detailed analysis", color = "danger",id="open-microsoft", n_clicks=0, style = {"width":"350px"}),
                 dbc.Modal(
                     [
                         dbc.ModalHeader(dbc.ModalTitle("Detailed Analysis")),
@@ -317,7 +327,7 @@ app.layout = html.Div([
             ]),
             dbc.Col([
                 toast_netflix_current_market,
-                dbc.Button("Click for detailed analysis", color = "danger",id="open-netflix", n_clicks=0, style = {"width":"350px"}),
+                dbc.Button("Click for detailed analysis", color = "warning",id="open-netflix", n_clicks=0, style = {"width":"350px"}),
                 dbc.Modal(
                     [
                         dbc.ModalHeader(dbc.ModalTitle("Detailed Analysis")),
